@@ -2,11 +2,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-import json
 import time
 
 url = "https://www.thetimes.com/world"
-
 
 def scrape_data():
     options = webdriver.ChromeOptions()
@@ -48,22 +46,22 @@ def scrape_data():
             titles = [h.text.strip() for h in headings if h.text.strip()]
 
         seen = set()
-        unique_titles = [x for x in titles if not (x in seen or seen.add(x))]
+        unique_titles = []
+        for title in titles:
+            if title not in seen:
+                seen.add(title)
+                unique_titles.append(title)
 
-        print(f"\nFound {len(unique_titles)} unique titles:")
-        for i, title in enumerate(unique_titles[:20], 1):
-            print(f"{i}. {title}")
-
-        return json.dumps({"titles": unique_titles}, indent=2)
+        return unique_titles
 
     except Exception as e:
-        print(f"Error during scraping: {str(e)}")
-        return json.dumps({"error": str(e)})
+        print(f"Error during scraping: {str(e)}", file=sys.stderr)
+        return []
     finally:
         driver.quit()
 
-
 if __name__ == "__main__":
-    result = scrape_data()
-    print("\nFinal Output:")
-    print(result)
+    titles = scrape_data()
+
+    for title in titles:
+        print(title)
