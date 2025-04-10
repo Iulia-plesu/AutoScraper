@@ -5,7 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import json
 import time
 
-url = "https://www.thetimes.com/"
+url = "https://www.thetimes.com/world"
 
 
 def scrape_data():
