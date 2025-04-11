@@ -1,6 +1,7 @@
 import sys
 import time
 import json
+from urllib.parse import urljoin
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -29,16 +30,26 @@ def scrape_data():
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article")))
 
         articles = driver.find_elements(By.CSS_SELECTOR, "article")
-        titles = []
+        results = []
+        seen_titles = set()
 
         for article in articles:
-            possible_titles = article.find_elements(By.CSS_SELECTOR, "h2, h3, a")
-            for pt in possible_titles:
-                text = pt.text.strip()
-                if text and len(text) > 10 and text not in titles:
-                    titles.append(text)
+            possible_links = article.find_elements(By.CSS_SELECTOR, "a")
 
-        return titles
+            for link in possible_links:
+                text = link.text.strip()
+                href = link.get_attribute("href")
+
+                if text and len(text) > 10 and href:
+                    full_url = urljoin(url, href)
+                    if text not in seen_titles:
+                        results.append({
+                            "title": text,
+                            "url": full_url
+                        })
+                        seen_titles.add(text)
+
+        return results
 
     except Exception as e:
         print(json.dumps({"error": str(e)}))
@@ -47,10 +58,10 @@ def scrape_data():
         driver.quit()
 
 if __name__ == "__main__":
-    titles = scrape_data()
+    headlines = scrape_data()
 
     output = {
-        "headlines": titles
+        "headlines": headlines
     }
 
     print(json.dumps(output, ensure_ascii=False))

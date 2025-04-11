@@ -3,11 +3,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using Newtonsoft.Json;
+using System.Windows.Navigation;
+
+
 
 namespace ScrapedData
 {
     public partial class MainWindow : Window
     {
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -73,6 +81,12 @@ namespace ScrapedData
             }
         }
 
+        public class Article
+        {
+            public string Title { get; set; }
+            public string Url { get; set; }
+        }
+
         private void DisplayResults(string result)
         {
             try
@@ -80,9 +94,14 @@ namespace ScrapedData
                 var jsonResult = JsonConvert.DeserializeObject<dynamic>(result);
                 if (jsonResult?.headlines != null)
                 {
-                    foreach (var title in jsonResult.headlines)
+                    foreach (var item in jsonResult.headlines)
                     {
-                        lstResults.Items.Add(title.ToString());
+                        var article = new Article
+                        {
+                            Title = item.title.ToString(),
+                            Url = item.url.ToString()
+                        };
+                        lstResults.Items.Add(article);
                     }
                     return;
                 }
@@ -96,9 +115,10 @@ namespace ScrapedData
             {
                 if (!string.IsNullOrWhiteSpace(title))
                 {
-                    lstResults.Items.Add(title.Trim());
+                    lstResults.Items.Add(new Article { Title = title.Trim(), Url = "" });
                 }
             }
         }
+
     }
 }

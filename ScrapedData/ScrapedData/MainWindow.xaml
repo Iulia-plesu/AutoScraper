@@ -15,13 +15,18 @@
                 Click="btnScrape_Click" Width="120" Height="30"/>
 
         <ListBox x:Name="lstResults" Grid.Row="1" Margin="10"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+         ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                    <TextBlock TextWrapping="Wrap">
+                <Hyperlink NavigateUri="{Binding Url}" RequestNavigate="Hyperlink_RequestNavigate">
+                    <TextBlock Text="{Binding Title}"/>
+                </Hyperlink>
+            </TextBlock>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
 
         <StatusBar Grid.Row="2">
             <StatusBarItem>
