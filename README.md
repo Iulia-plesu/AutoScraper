@@ -1,2 +1,2 @@
 # AutoScraper
-A simple web scraper with periodic data collection, email notifications, and a WPF frontend to display the scraped data. The project integrates Python for web scraping and C# for a user-friendly UI.
+A work-in-progress web scraper that collects data periodically, sends email notifications, and features a WPF frontend to display the scraped data. The project combines Python for the web scraping logic and C# for creating a user-friendly interface. Currently under development, it aims to offer seamless integration between data collection and presentation, with future improvements planned for enhanced functionality.
