@@ -1,58 +1,49 @@
+import sys
+import time
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-import time
 
-url = "https://www.thetimes.com/world"
+url = "https://www.bbc.com/news"
 
 def scrape_data():
     options = webdriver.ChromeOptions()
     options.add_argument('--disable-blink-features=AutomationControlled')
+    options.add_argument('--headless')  # Optional: comment this out if you want to see the browser
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     try:
         driver.get(url)
-        time.sleep(3)
 
+        wait = WebDriverWait(driver, 10)
+
+        # Scroll to load more articles
         for _ in range(3):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
 
-        selectors = [
-            "h3",
-            "h2",
-            "[data-testid*='headline']",
-            ".js_article-headline",
-            "article h3",
-            "a[class*='headline']"
-        ]
+        # Wait for at least one article to show up
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article")))
 
+        # Take screenshot to debug what’s visible
+        driver.save_screenshot("debug_screenshot.png")
+
+        # Try to extract titles from article tags
         titles = []
-        for selector in selectors:
-            try:
-                elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                for element in elements:
-                    title = element.text.strip()
-                    if title and len(title) > 10:
-                        titles.append(title)
-                if titles:
-                    break
-            except:
-                continue
+        articles = driver.find_elements(By.CSS_SELECTOR, "article")
 
-        if not titles:
-            headings = driver.find_elements(By.XPATH, "//h1 | //h2 | //h3 | //h4")
-            titles = [h.text.strip() for h in headings if h.text.strip()]
+        for article in articles:
+            possible_titles = article.find_elements(By.CSS_SELECTOR, "h2, h3, a")
+            for pt in possible_titles:
+                text = pt.text.strip()
+                if text and len(text) > 10 and text not in titles:
+                    titles.append(text)
 
-        seen = set()
-        unique_titles = []
-        for title in titles:
-            if title not in seen:
-                seen.add(title)
-                unique_titles.append(title)
-
-        return unique_titles
+        return titles
 
     except Exception as e:
         print(f"Error during scraping: {str(e)}", file=sys.stderr)
