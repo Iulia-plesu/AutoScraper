@@ -1,5 +1,6 @@
 import sys
 import time
+import json
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -13,7 +14,7 @@ url = "https://www.bbc.com/news"
 def scrape_data():
     options = webdriver.ChromeOptions()
     options.add_argument('--disable-blink-features=AutomationControlled')
-    options.add_argument('--headless')  # Optional: comment this out if you want to see the browser
+    options.add_argument('--headless')  # comment this line if you want to see the browser
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     try:
@@ -21,20 +22,14 @@ def scrape_data():
 
         wait = WebDriverWait(driver, 10)
 
-        # Scroll to load more articles
         for _ in range(3):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
 
-        # Wait for at least one article to show up
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article")))
 
-        # Take screenshot to debug what’s visible
-        driver.save_screenshot("debug_screenshot.png")
-
-        # Try to extract titles from article tags
-        titles = []
         articles = driver.find_elements(By.CSS_SELECTOR, "article")
+        titles = []
 
         for article in articles:
             possible_titles = article.find_elements(By.CSS_SELECTOR, "h2, h3, a")
@@ -46,7 +41,7 @@ def scrape_data():
         return titles
 
     except Exception as e:
-        print(f"Error during scraping: {str(e)}", file=sys.stderr)
+        print(json.dumps({"error": str(e)}))
         return []
     finally:
         driver.quit()
@@ -54,5 +49,8 @@ def scrape_data():
 if __name__ == "__main__":
     titles = scrape_data()
 
-    for title in titles:
-        print(title)
+    output = {
+        "headlines": titles
+    }
+
+    print(json.dumps(output, ensure_ascii=False))
