@@ -14,12 +14,11 @@ namespace DataLink.Pages
         {
             string currentDirectory = Directory.GetCurrentDirectory();
 
-            string pythonPath = Path.Combine(currentDirectory, @"..\..\..\..\..\Python\Python312\python.exe");
-            string scriptPath = Path.Combine(currentDirectory, @"..\..\..\..\..\WebScraping\Main.py");
+            string pythonScriptPath = Path.Combine(currentDirectory, @"..\..\..\..\..\WebScraping\dist\Main.exe");  // Path to the generated .exe
 
             try
             {
-                var result = await RunPythonScriptAsync(pythonPath, scriptPath);
+                var result = await RunPythonScriptAsync(pythonScriptPath);  // Call the .exe instead of python
                 Articles = ParseArticles(result);
             }
             catch (Exception ex)
@@ -28,30 +27,47 @@ namespace DataLink.Pages
             }
         }
 
-        private async Task<string> RunPythonScriptAsync(string pythonPath, string scriptPath)
+        private async Task<string> RunPythonScriptAsync(string exePath)
         {
             var start = new ProcessStartInfo
             {
-                FileName = pythonPath,
-                Arguments = $"\"{scriptPath}\"",
+                FileName = exePath,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                CreateNoWindow = true
+                CreateNoWindow = false  // Allow the window to remain visible
             };
 
             using var process = new Process { StartInfo = start };
             process.Start();
 
+            // Asynchronously read the output and error
             var outputTask = process.StandardOutput.ReadToEndAsync();
             var errorTask = process.StandardError.ReadToEndAsync();
 
+            // Wait for the process to finish and get the output and error
             await Task.WhenAll(outputTask, errorTask);
 
-            if (!string.IsNullOrEmpty(errorTask.Result))
-                throw new Exception($"Python error: {errorTask.Result}");
+            // Ensure we wait for the process to exit
+            process.WaitForExit();
 
-            return outputTask.Result;
+            string output = outputTask.Result;
+            string error = errorTask.Result;
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                Console.WriteLine("Python error: " + error);  // Log any Python errors
+                throw new Exception($"Python error: {error}");
+            }
+
+            // Log the Python output (for debugging)
+            Console.WriteLine("Python output: " + output);
+
+            // Add this line to keep the window open after the program ends for debugging
+            Console.WriteLine("Press Enter to close...");
+            Console.ReadLine();  // This keeps the console open until you press Enter
+
+            return output;
         }
 
         private List<Article> ParseArticles(string result)
@@ -60,6 +76,9 @@ namespace DataLink.Pages
 
             try
             {
+                // Log the raw JSON result for debugging purposes
+                Console.WriteLine("Raw JSON result: " + result);
+
                 var jsonResult = JsonConvert.DeserializeObject<dynamic>(result);
                 if (jsonResult?.headlines != null)
                 {
@@ -75,9 +94,9 @@ namespace DataLink.Pages
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Handle exception (e.g., log it or show error)
+                Console.WriteLine("Error parsing JSON: " + ex.Message);
             }
 
             return articles;
