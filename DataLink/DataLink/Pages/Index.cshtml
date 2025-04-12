@@ -1,0 +1,23 @@
+﻿@page
+@model DataLink.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<h2>Scraped Articles</h2>
+
+@if (Model.Articles.Count == 0)
+{
+    <p>No articles found or failed to load.</p>
+}
+else
+{
+    <ul>
+        @foreach (var article in Model.Articles)
+        {
+            <li>
+                <a href="@article.Url" target="_blank">@article.Title</a>
+            </li>
+        }
+    </ul>
+}
