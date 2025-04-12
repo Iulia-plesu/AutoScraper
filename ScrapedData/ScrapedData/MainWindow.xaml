@@ -10,7 +10,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Button x:Name="btnScrape" Content="Scrape The Times" 
+        <Button x:Name="btnScrape" Content="Scrape BBC" 
                 HorizontalAlignment="Center" Margin="0,10,0,10" Padding="10,5"
                 Click="btnScrape_Click" Width="120" Height="30"/>
 
@@ -19,12 +19,13 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock TextWrapping="Wrap">
-                <Hyperlink NavigateUri="{Binding Url}" RequestNavigate="Hyperlink_RequestNavigate">
-                    <TextBlock Text="{Binding Title}"/>
-                </Hyperlink>
-            </TextBlock>
+            <Hyperlink NavigateUri="{Binding Url}" RequestNavigate="Hyperlink_RequestNavigate">
+                <Run Text="{Binding Title}" />
+            </Hyperlink>
+                    </TextBlock>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+
         </ListBox>
 
 

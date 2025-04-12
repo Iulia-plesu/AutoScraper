@@ -96,27 +96,33 @@ namespace ScrapedData
                 {
                     foreach (var item in jsonResult.headlines)
                     {
-                        var article = new Article
+                        string title = item.title != null ? item.title.ToString() : "";
+                        string url = item.url != null ? item.url.ToString() : "";
+
+                        // Only add if URL is not null/empty
+                        if (!string.IsNullOrWhiteSpace(url))
                         {
-                            Title = item.title.ToString(),
-                            Url = item.url.ToString()
-                        };
-                        lstResults.Items.Add(article);
+                            lstResults.Items.Add(new Article
+                            {
+                                Title = title,
+                                Url = url
+                            });
+                        }
                     }
                     return;
                 }
             }
             catch
             {
+                // Optional: log error or show debug info
             }
 
+            // Fallback mode — skip displaying anything if no URLs
             var titles = result.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var title in titles)
             {
-                if (!string.IsNullOrWhiteSpace(title))
-                {
-                    lstResults.Items.Add(new Article { Title = title.Trim(), Url = "" });
-                }
+                // If no URL fallback is wanted, comment this section
+                // lstResults.Items.Add(new Article { Title = title.Trim(), Url = "" });
             }
         }
 
