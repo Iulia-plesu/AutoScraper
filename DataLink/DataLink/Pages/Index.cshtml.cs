@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using DataLink.Models;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.IO;
 
 namespace DataLink.Pages
 {
@@ -11,8 +12,10 @@ namespace DataLink.Pages
 
         public async Task OnGetAsync()
         {
-            string pythonPath = @"C:\Users\Plesu\AppData\Local\Programs\Python\Python312\python.exe";
-            string scriptPath = @"C:\Users\Plesu\Desktop\AutoScraper\WebScraping\Main.py";
+            string currentDirectory = Directory.GetCurrentDirectory();
+
+            string pythonPath = Path.Combine(currentDirectory, @"..\..\..\..\..\Python\Python312\python.exe");
+            string scriptPath = Path.Combine(currentDirectory, @"..\..\..\..\..\WebScraping\Main.py");
 
             try
             {
@@ -21,7 +24,7 @@ namespace DataLink.Pages
             }
             catch (Exception ex)
             {
-                // Optional: handle/log error
+                // Handle exception (e.g., log it or show error)
             }
         }
 
@@ -74,7 +77,7 @@ namespace DataLink.Pages
             }
             catch
             {
-                // Optional: handle fallback
+                // Handle exception (e.g., log it or show error)
             }
 
             return articles;

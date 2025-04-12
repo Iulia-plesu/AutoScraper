@@ -14,13 +14,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 url = "https://www.bbc.com/news"
 
 def split_extras(text):
-    """
-    Clean the title text by separating time, category, and tags (e.g., "LIVE", "see more") from the main title.
-    """
+
     tags = []
     clean_title = text.strip()
 
-    # Detect and strip tags like "LIVE" or "See more"
     if "LIVE" in clean_title.upper():
         tags.append("LIVE")
         clean_title = re.sub(r'\bLIVE\b', '', clean_title, flags=re.IGNORECASE).strip()
@@ -29,15 +26,13 @@ def split_extras(text):
         tags.append("See more")
         clean_title = re.sub(r'\bsee more\b', '', clean_title, flags=re.IGNORECASE).strip()
 
-    # Detect time expressions like "12 hrs ago", "2h ago", "1 day ago"
     time_match = re.search(r'(\d{1,2}\s?(hrs?|h|min)s? ago|\d+\s?days? ago)', clean_title.lower())
     found_time = ""
     if time_match:
         found_time = time_match.group(0)
         clean_title = clean_title.replace(found_time, '').strip()
 
-    # Detect category (usually found at the end of the title, after a newline or specific structure)
-    category_match = re.search(r'(\n.*|\s\-\s.*)', clean_title)  # Match if there’s a hyphen or newline at the end
+    category_match = re.search(r'(\n.*|\s\-\s.*)', clean_title)
     found_category = ""
     if category_match:
         found_category = category_match.group(0).strip()
@@ -78,7 +73,6 @@ def scrape_data():
                 if clean_title and clean_title not in seen_titles:
                     seen_titles.add(clean_title)
 
-                    # Try to find a parent <a> tag or closest anchor
                     try:
                         link_element = heading.find_element(By.XPATH, ".//ancestor::a[1]")
                         href = link_element.get_attribute("href")
@@ -106,5 +100,5 @@ if __name__ == "__main__":
         "headlines": headlines
     }
 
-    # Print the results in a pretty JSON format
+    # Print the results in a JSON format
     print(json.dumps(output, ensure_ascii=False, indent=2))
