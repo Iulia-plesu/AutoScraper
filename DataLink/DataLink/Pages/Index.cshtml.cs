@@ -14,16 +14,16 @@ namespace DataLink.Pages
         {
             string currentDirectory = Directory.GetCurrentDirectory();
 
-            string pythonScriptPath = Path.Combine(currentDirectory, @"..\..\..\..\..\WebScraping\dist\Main.exe");  // Path to the generated .exe
+            string pythonScriptPath = Path.Combine(currentDirectory, @"..\..\..\AutoScraper\WebScraping\dist\Main.exe");  
 
             try
             {
-                var result = await RunPythonScriptAsync(pythonScriptPath);  // Call the .exe instead of python
+                var result = await RunPythonScriptAsync(pythonScriptPath);  
                 Articles = ParseArticles(result);
             }
             catch (Exception ex)
             {
-                // Handle exception (e.g., log it or show error)
+
             }
         }
 
@@ -35,20 +35,17 @@ namespace DataLink.Pages
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                CreateNoWindow = false  // Allow the window to remain visible
+                CreateNoWindow = false  
             };
 
             using var process = new Process { StartInfo = start };
             process.Start();
 
-            // Asynchronously read the output and error
             var outputTask = process.StandardOutput.ReadToEndAsync();
             var errorTask = process.StandardError.ReadToEndAsync();
 
-            // Wait for the process to finish and get the output and error
             await Task.WhenAll(outputTask, errorTask);
 
-            // Ensure we wait for the process to exit
             process.WaitForExit();
 
             string output = outputTask.Result;
@@ -56,16 +53,14 @@ namespace DataLink.Pages
 
             if (!string.IsNullOrEmpty(error))
             {
-                Console.WriteLine("Python error: " + error);  // Log any Python errors
+                Console.WriteLine("Python error: " + error); 
                 throw new Exception($"Python error: {error}");
             }
 
-            // Log the Python output (for debugging)
             Console.WriteLine("Python output: " + output);
 
-            // Add this line to keep the window open after the program ends for debugging
             Console.WriteLine("Press Enter to close...");
-            Console.ReadLine();  // This keeps the console open until you press Enter
+            Console.ReadLine(); 
 
             return output;
         }
@@ -76,7 +71,6 @@ namespace DataLink.Pages
 
             try
             {
-                // Log the raw JSON result for debugging purposes
                 Console.WriteLine("Raw JSON result: " + result);
 
                 var jsonResult = JsonConvert.DeserializeObject<dynamic>(result);
