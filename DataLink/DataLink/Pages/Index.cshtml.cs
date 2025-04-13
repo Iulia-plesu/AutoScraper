@@ -14,7 +14,7 @@ namespace DataLink.Pages
         {
             string currentDirectory = Directory.GetCurrentDirectory();
 
-            string pythonScriptPath = Path.Combine(currentDirectory, @"..\..\..\AutoScraper\WebScraping\dist\Main.exe");
+            string pythonScriptPath = Path.Combine(currentDirectory, @"..\..\WebScraping\dist\Main.exe");
 
             try
             {
