@@ -14,16 +14,16 @@ namespace DataLink.Pages
         {
             string currentDirectory = Directory.GetCurrentDirectory();
 
-            string pythonScriptPath = Path.Combine(currentDirectory, @"..\..\..\AutoScraper\WebScraping\dist\Main.exe");  
+            string pythonScriptPath = Path.Combine(currentDirectory, @"..\..\..\AutoScraper\WebScraping\dist\Main.exe");
 
             try
             {
-                var result = await RunPythonScriptAsync(pythonScriptPath);  
+                var result = await RunPythonScriptAsync(pythonScriptPath);
                 Articles = ParseArticles(result);
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine("Error running script: " + ex.Message);
             }
         }
 
@@ -35,7 +35,7 @@ namespace DataLink.Pages
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                CreateNoWindow = false  
+                CreateNoWindow = true
             };
 
             using var process = new Process { StartInfo = start };
@@ -53,14 +53,9 @@ namespace DataLink.Pages
 
             if (!string.IsNullOrEmpty(error))
             {
-                Console.WriteLine("Python error: " + error); 
+                Console.WriteLine("Python error: " + error);
                 throw new Exception($"Python error: {error}");
             }
-
-            Console.WriteLine("Python output: " + output);
-
-            Console.WriteLine("Press Enter to close...");
-            Console.ReadLine(); 
 
             return output;
         }
@@ -71,8 +66,6 @@ namespace DataLink.Pages
 
             try
             {
-                Console.WriteLine("Raw JSON result: " + result);
-
                 var jsonResult = JsonConvert.DeserializeObject<dynamic>(result);
                 if (jsonResult?.headlines != null)
                 {
