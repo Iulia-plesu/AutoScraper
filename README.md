@@ -4,12 +4,175 @@ A web scraping solution that collects news articles from BBC News, categorizes t
 
 ## Prerequisites
 
-- Python 3.8 or later
-- .NET 8.0 SDK
-- Chrome browser
-- Gmail account with 2-factor authentication enabled
+### Required Software
+1. **Python Environment**:
+   - Python 3.8 or later
+   - pip (Python package installer)
+   ```powershell
+   # Check Python version
+   python --version
+   # Check pip version
+   pip --version
+   ```
+
+2. **.NET Environment**:
+   - .NET 8.0 SDK
+   ```powershell
+   # Check .NET version
+   dotnet --version
+   ```
+
+3. **Chrome Browser**:
+   - Google Chrome (latest version)
+   - Chrome WebDriver (automatically managed)
+   ```powershell
+   # Chrome should be installed from https://www.google.com/chrome/
+   ```
+
+4. **Gmail Account**:
+   - Account with 2-factor authentication enabled
+   - App password generated
+
+### Installing Prerequisites
+
+1. **Install Python**:
+   ```powershell
+   # Download from https://www.python.org/downloads/
+   # During installation:
+   # ✓ Add Python to PATH
+   # ✓ Install pip
+   ```
+
+2. **Install .NET SDK**:
+   ```powershell
+   # Download from https://dotnet.microsoft.com/download
+   # Choose .NET 8.0 SDK
+   ```
+
+3. **Install Development Tools** (Optional):
+   ```powershell
+   # Install Visual Studio Code
+   winget install Microsoft.VisualStudioCode
+
+   # Install Git
+   winget install Git.Git
+   ```
 
 ## Step-by-Step Setup Guide
+
+1. **Clone or Download the Repository**:
+   ```powershell
+   git clone <repository-url>
+   cd AutoScraper
+   ```
+
+2. **Set Up Python Environment**:
+   ```powershell
+   # Create and activate a virtual environment (recommended)
+   python -m venv venv
+   .\venv\Scripts\activate
+
+   # Install required packages
+   pip install -r requirements.txt
+   ```
+
+3. **Configure Gmail Credentials**:
+   - Go to your Google Account settings
+   - Enable 2-Step Verification if not already enabled
+   - Generate an App Password:
+     1. Go to Security settings
+     2. Select "App passwords"
+     3. Generate a new app password
+   - Update `appsettings.json` in the DataLink project with your credentials
+
+4. **Build the Python Scraper**:
+   ```powershell
+   # Navigate to WebScraping directory
+   cd WebScraping
+
+   # Build the executable
+   pyinstaller --onefile Main.py
+   ```
+   The executable will be created in `dist/Main.exe`
+
+5. **Build and Run DataLink Service**:
+   ```powershell
+   # Navigate to DataLink directory
+   cd ../DataLink
+
+   # Build the project
+   dotnet build
+
+   # Run the service
+   dotnet run
+   ```
+
+6. **Testing the Setup**:
+   - The DataLink service will start on `https://localhost:7227`
+   - The scraper executable is in `WebScraping/dist/Main.exe`
+   - Test both components to ensure proper functionality
+
+## Configuration
+
+### DataLink Service
+The DataLink service configuration is stored in `appsettings.json`:
+```json
+{
+  "Email": {
+    "SmtpServer": "smtp.gmail.com",
+    "Port": 587,
+    "Username": "your-email@gmail.com",
+    "Password": "your-app-password",
+    "FromEmail": "your-email@gmail.com"
+  }
+}
+```
+
+### WebScraper
+The Python scraper can be configured by modifying the following settings in `Main.py`:
+- News categories to scrape
+- Update frequency
+- Output format
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Python Environment Issues**:
+   - If `pip` fails to install packages, try updating pip:
+     ```powershell
+     python -m pip install --upgrade pip
+     ```
+   - If you get SSL errors, ensure your Python installation includes SSL certificates
+
+2. **Chrome WebDriver Issues**:
+   - If the scraper fails to start Chrome, ensure Chrome is up to date
+   - Clear your Chrome user profile if you encounter browser automation issues
+
+3. **DataLink Service Issues**:
+   - If the service fails to start, check if port 7227 is available
+   - Verify your Gmail credentials in `appsettings.json`
+   - Ensure your app password is correctly configured
+
+4. **Build Issues**:
+   - For Python build errors, ensure all dependencies are installed:
+     ```powershell
+     pip install -r requirements.txt
+     ```
+   - For .NET build errors, try cleaning the solution:
+     ```powershell
+     dotnet clean
+     dotnet build
+     ```
+
+### Getting Help
+If you encounter issues not covered here:
+1. Check the error messages in the console
+2. Review the application logs
+3. Open an issue on the project repository with:
+   - Detailed error description
+   - Steps to reproduce
+   - Environment information
 
 ### 1. Initial Setup
 
