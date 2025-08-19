@@ -1,30 +1,66 @@
 # AutoScraper
 
-A web scraping solution that collects news articles from BBC News, categorizes them, and displays them through a clean web interface. The project combines Python for web scraping and C# ASP.NET Core for the web application.
-
-## Components
-
-1. **WebScraper (Python)**
-   - Located in `/WebScraping/`
-   - Uses Selenium for web scraping
-   - Automatically categorizes articles
-   - Outputs structured JSON data
-
-2. **DataLink (C# ASP.NET Core)**
-   - Located in `/DataLink/`
-   - Web application to display scraped articles
-   - Clean and responsive interface
-   - Category-based article organization
+A web scraping solution that collects news articles from BBC News, categorizes them, and displays them through a clean web interface. The project combines Python for web scraping and C# ASP.NET Core for the web application with email digest functionality.
 
 ## Prerequisites
 
 - Python 3.8 or later
 - .NET 8.0 SDK
-- Chrome browser (for web scraping)
+- Chrome browser
+- Gmail account with 2-factor authentication enabled
 
-## Setup Instructions
+## Step-by-Step Setup Guide
 
-### 0. Email Configuration
+### 1. Initial Setup
+
+```powershell
+# Clone the repository (if not already done)
+git clone https://github.com/Iulia-plesu/AutoScraper.git
+cd AutoScraper
+```
+
+### 2. Python Web Scraper Setup
+
+```powershell
+# Navigate to WebScraping directory
+cd WebScraping
+
+# Create Python virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+.venv\Scripts\activate
+
+# Install required packages
+pip install selenium
+pip install webdriver_manager
+pip install pyinstaller
+pip install newtonsoft-json
+
+# Build the executable
+pyinstaller --onefile Main.py
+
+# Verify the executable was created
+Test-Path dist\Main.exe
+```
+
+### 3. C# Web Application Setup
+
+```powershell
+# Navigate to DataLink project
+cd ..\DataLink\DataLink
+
+# Restore NuGet packages
+dotnet restore
+
+# Build the project
+dotnet build
+
+# Create development certificate
+dotnet dev-certs https --trust
+```
+
+### 4. Email Configuration
 
 1. Open `/DataLink/DataLink/appsettings.json`
 2. Update the SmtpSettings section with your email credentials:
@@ -43,58 +79,72 @@ A web scraping solution that collects news articles from BBC News, categorizes t
    2. Generate an App Password
    3. Use the App Password in the configuration
 
-### 1. WebScraper Setup
-
-The Python scraper executable is pre-built and ready to use in `/WebScraping/dist/Main.exe`.
-
-To rebuild the scraper (optional):
-```bash
-cd WebScraping
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-pyinstaller --onefile Main.py
-```
-
-### 2. DataLink Setup
-
-The web application is pre-built and ready to use in `/DataLink/DataLink/bin/Release/net8.0/DataLink.exe`.
-
-To rebuild the web application (optional):
-```bash
-cd DataLink
-dotnet build
-dotnet publish -c Release
-```
-
 ## Running the Application
 
-1. **Start the Web Scraper**
-   ```bash
-   cd WebScraping/dist
-   ./Main.exe
+### First Run (Testing Each Component)
+
+1. Test the Web Scraper:
+   ```powershell
+   # Navigate to WebScraping directory
+   cd WebScraping\dist
+   
+   # Run the scraper
+   .\Main.exe
+   
+   # Check if JSON output is generated correctly
    ```
-   This will scrape the latest articles and output JSON data.
 
-2. **Start the Web Application**
-   ```bash
-   cd DataLink/DataLink/bin/Release/net8.0
-   ./DataLink.exe
+2. Test the Web Application:
+   ```powershell
+   # Navigate to DataLink project
+   cd ..\..\DataLink\DataLink
+   
+   # Run the application
+   dotnet run --launch-profile "http"
+   
+   # Application will be available at http://localhost:5000
    ```
-   The web interface will be available at `http://localhost:5000`
 
-## Testing
+### Regular Usage
 
-1. **Test the Web Scraper**
-   - Run the scraper: `./WebScraping/dist/Main.exe`
-   - Check the console output for JSON data
-   - Verify that articles are properly categorized
+1. Start the Web Application:
+   ```powershell
+   cd DataLink\DataLink
+   dotnet run --launch-profile "http"
+   ```
 
-2. **Test the Web Application**
-   - Start the application
-   - Open `http://localhost:5000` in your browser
-   - Check if articles are displayed correctly
-   - Verify category navigation
+2. Open your browser:
+   - Go to http://localhost:5000
+   - The application will automatically:
+     1. Run the web scraper
+     2. Parse the articles
+     3. Send email digest
+     4. Display articles on the page
+
+## Troubleshooting
+
+1. If the scraper fails:
+   ```powershell
+   # Check Chrome version
+   # Ensure Chrome is installed and up to date
+   # Try running with visible browser
+   cd WebScraping
+   python Main.py
+   ```
+
+2. If the web application fails:
+   ```powershell
+   # Clean and rebuild
+   cd DataLink\DataLink
+   dotnet clean
+   dotnet build
+   dotnet run --launch-profile "http" --verbosity detailed
+   ```
+
+3. If email sending fails:
+   - Verify app password is correct
+   - Check email settings in appsettings.json
+   - Ensure 2FA is enabled on Gmail account
 
 ## Project Structure
 
@@ -102,21 +152,22 @@ dotnet publish -c Release
 AutoScraper/
 ├── WebScraping/
 │   ├── Main.py              # Scraping logic
-│   ├── requirements.txt     # Python dependencies
-│   └── dist/
-│       └── Main.exe         # Built executable
+│   ├── dist/
+│   │   └── Main.exe         # Built executable
+│   └── .venv/               # Python virtual environment
 ├── DataLink/
-│   ├── DataLink.sln
 │   └── DataLink/
 │       ├── Program.cs       # Application entry
+│       ├── Services/        # Email service
 │       ├── Models/          # Data models
-│       └── Pages/           # Web pages
+│       ├── Pages/          # Web pages
+│       └── appsettings.json # Configuration
 └── README.md
 ```
 
 ## Development Notes
 
-- The scraper is configured to run in headless mode
-- Web application uses minimal API style
-- JSON data format matches between Python and C# models
-- Error handling is implemented in both components
+- Web scraper runs in headless mode by default
+- Email digests are sent automatically when articles are scraped
+- JSON format is consistent between Python and C# components
+- All components include comprehensive error handling
