@@ -26,22 +26,16 @@ namespace DataLink.Pages
             {
                 var result = await RunPythonScriptAsync(pythonScriptPath);
                 var scrapedData = ParseScrapedData(result);
-
+                
                 // Send email with the scraped data
                 try
                 {
                     await _emailService.SendNewsDigestAsync(scrapedData);
                     EmailStatus = "Email sent successfully!";
                 }
-                catch (InvalidOperationException configEx)
-                {
-                    EmailStatus = $"Email configuration error: {configEx.Message}";
-                    Console.WriteLine($"Configuration error: {configEx}");
-                }
                 catch (Exception emailEx)
                 {
                     EmailStatus = $"Error sending email: {emailEx.Message}";
-                    Console.WriteLine($"Email error: {emailEx}");
                 }
 
                 // Flatten articles for display

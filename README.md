@@ -24,6 +24,25 @@ A web scraping solution that collects news articles from BBC News, categorizes t
 
 ## Setup Instructions
 
+### 0. Email Configuration
+
+1. Open `/DataLink/DataLink/appsettings.json`
+2. Update the SmtpSettings section with your email credentials:
+   ```json
+   "SmtpSettings": {
+     "FromEmail": "your-email@example.com",
+     "ToEmail": "recipient@example.com",
+     "SmtpServer": "smtp.gmail.com",
+     "Port": 587,
+     "Username": "your-email@gmail.com",
+     "Password": "your-app-specific-password"
+   }
+   ```
+   For Gmail, you'll need to:
+   1. Enable 2-factor authentication
+   2. Generate an App Password
+   3. Use the App Password in the configuration
+
 ### 1. WebScraper Setup
 
 The Python scraper executable is pre-built and ready to use in `/WebScraping/dist/Main.exe`.
