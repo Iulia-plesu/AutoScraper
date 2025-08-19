@@ -1,23 +1,209 @@
 ﻿@page
 @model DataLink.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Latest News";
 }
 
-<h2>Scraped Articles</h2>
+<div class="news-container">
+    <header class="site-header">
+        <h1 class="main-title">Latest News</h1>
+        <div class="header-decoration"></div>
+    </header>
 
-@if (Model.Articles.Count == 0)
-{
-    <p>No articles found or failed to load.</p>
-}
-else
-{
-    <ul>
-        @foreach (var article in Model.Articles)
-        {
-            <li>
-                <a href="@article.Url" target="_blank">@article.Title</a>
-            </li>
+    @if (Model.Articles.Count == 0)
+    {
+        <div class="no-articles">
+            <p>No articles found or failed to load.</p>
+        </div>
+    }
+    else
+    {
+        <div class="articles-grid">
+            @{
+                var groupedArticles = Model.Articles.GroupBy(a => a.Category ?? "Featured").OrderBy(g => g.Key);
+            }
+
+            @foreach (var group in groupedArticles)
+            {
+                <section class="category-section">
+                    <h2 class="category-title">
+                        <span class="category-text">@group.Key</span>
+                    </h2>
+                    <div class="article-list">
+                        @foreach (var article in group)
+                        {
+                            <article class="article-card">
+                                <div class="article-content">
+                                    <h3 class="article-title">
+                                        <a href="@article.Url" target="_blank">@article.Title</a>
+                                    </h3>
+                                    <div class="article-metadata">
+                                        @if (article.Tags?.Any() == true)
+                                        {
+                                            <div class="tags">
+                                                @foreach (var tag in article.Tags)
+                                                {
+                                                    <span class="tag">@tag</span>
+                                                }
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrEmpty(article.Timestamp))
+                                        {
+                                            <time class="timestamp">@article.Timestamp</time>
+                                        }
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </section>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .news-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+        font-family: "Playfair Display", Georgia, serif;
+        background: #fff;
+    }
+
+    .site-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+        border-bottom: 2px solid #e0e0e0;
+        position: relative;
+    }
+
+    .main-title {
+        font-size: 3rem;
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    .header-decoration {
+        width: 100px;
+        height: 2px;
+        background: #2c3e50;
+        margin: 1rem auto 0;
+    }
+
+    .category-section {
+        margin-bottom: 3rem;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .category-title {
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #000;
+        padding-bottom: 0.5rem;
+    }
+
+    .category-text {
+        color: #000;
+        font-size: 1.8rem;
+        font-weight: normal;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .article-list {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .article-card {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e0e0e0;
+        transition: background-color 0.2s ease;
+    }
+
+    .article-card:hover {
+        background-color: #f8f9fa;
+    }
+
+    .article-title {
+        font-size: 1.4rem;
+        line-height: 1.5;
+        margin: 0 0 0.5rem 0;
+        font-weight: normal;
+    }
+
+    .article-title a {
+        color: #000;
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s ease;
+    }
+
+    .article-title a:hover {
+        border-bottom-color: #000;
+    }
+
+    .article-metadata {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-family: "Georgia", serif;
+        color: #666;
+    }
+
+    .tags {
+        display: inline;
+        margin-right: 1rem;
+    }
+
+    .tag {
+        font-style: italic;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .tag:not(:last-child):after {
+        content: "•";
+        margin: 0 0.5rem;
+    }
+
+    .timestamp {
+        color: #666;
+        font-size: 0.9rem;
+        font-style: italic;
+    }
+
+    .no-articles {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+        font-style: italic;
+        border: 1px dashed #dee2e6;
+        border-radius: 4px;
+        margin: 2rem 0;
+    }
+
+    @@media (max-width: 768px) {
+        .news-container {
+            padding: 0 1rem;
         }
-    </ul>
-}
+
+        .main-title {
+            font-size: 2rem;
+        }
+
+        .category-text {
+            font-size: 1.5rem;
+        }
+
+        .article-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

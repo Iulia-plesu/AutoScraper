@@ -66,19 +66,23 @@ namespace DataLink.Pages
 
             try
             {
-                var jsonResult = JsonConvert.DeserializeObject<dynamic>(result);
-                if (jsonResult?.headlines != null)
-                {
-                    foreach (var item in jsonResult.headlines)
-                    {
-                        string title = item.title?.ToString().Trim() ?? "";
-                        string url = item.url?.ToString().Trim() ?? "";
+                var scrapedData = JsonConvert.DeserializeObject<ScrapedData>(result);
 
-                        if (!string.IsNullOrWhiteSpace(title) && !string.IsNullOrWhiteSpace(url))
+                if (scrapedData?.Categories != null)
+                {
+                    foreach (var category in scrapedData.Categories)
+                    {
+                        foreach (var article in category.Value)
                         {
-                            articles.Add(new Article { Title = title, Url = url });
+                            article.Category = category.Key;
+                            articles.Add(article);
                         }
                     }
+                }
+
+                if (scrapedData?.Other != null)
+                {
+                    articles.AddRange(scrapedData.Other);
                 }
             }
             catch (Exception ex)

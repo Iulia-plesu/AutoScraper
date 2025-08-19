@@ -1,2 +1,43 @@
-# AutoScraper
-A work-in-progress web scraper that collects data periodically, sends email notifications, and features a WPF frontend to display the scraped data. The project combines Python for the web scraping logic and C# for creating a user-friendly interface. Currently under development, it aims to offer seamless integration between data collection and presentation, with future improvements planned for enhanced functionality.
+# BBC News Scraper
+
+A web application that scrapes and displays the latest news from BBC News website.
+
+## Structure
+
+- `WebScraping/` - Python scraper using Selenium
+  - `Main.py` - Main scraping script
+  - `dist/Main.exe` - Compiled executable
+
+- `DataLink/` - ASP.NET Core web application
+  - Displays scraped articles in a clean, newspaper-style layout
+  - Automatically categorizes articles
+  - Handles article metadata (timestamps, tags)
+
+## Setup
+
+1. Requirements:
+   - .NET 8.0 SDK
+   - Chrome browser (for the scraper)
+   - Python 3.x (only for development)
+
+2. Installation:
+   ```bash
+   # Clone the repository
+   git clone https://github.com/Iulia-plesu/AutoScraper.git
+   cd AutoScraper
+
+   # Run the web application
+   cd DataLink/DataLink
+   dotnet run
+   ```
+
+3. Access the application at `http://localhost:5000`
+
+## Features
+
+- Clean, responsive newspaper-style layout
+- Article categorization
+- Tag support for video/audio content
+- Timestamp display
+- Automatic duplicate removal
+- Link to original articles
