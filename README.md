@@ -1,43 +1,103 @@
-# BBC News Scraper
+# AutoScraper
 
-A web application that scrapes and displays the latest news from BBC News website.
+A web scraping solution that collects news articles from BBC News, categorizes them, and displays them through a clean web interface. The project combines Python for web scraping and C# ASP.NET Core for the web application.
 
-## Structure
+## Components
 
-- `WebScraping/` - Python scraper using Selenium
-  - `Main.py` - Main scraping script
-  - `dist/Main.exe` - Compiled executable
+1. **WebScraper (Python)**
+   - Located in `/WebScraping/`
+   - Uses Selenium for web scraping
+   - Automatically categorizes articles
+   - Outputs structured JSON data
 
-- `DataLink/` - ASP.NET Core web application
-  - Displays scraped articles in a clean, newspaper-style layout
-  - Automatically categorizes articles
-  - Handles article metadata (timestamps, tags)
+2. **DataLink (C# ASP.NET Core)**
+   - Located in `/DataLink/`
+   - Web application to display scraped articles
+   - Clean and responsive interface
+   - Category-based article organization
 
-## Setup
+## Prerequisites
 
-1. Requirements:
-   - .NET 8.0 SDK
-   - Chrome browser (for the scraper)
-   - Python 3.x (only for development)
+- Python 3.8 or later
+- .NET 8.0 SDK
+- Chrome browser (for web scraping)
 
-2. Installation:
+## Setup Instructions
+
+### 1. WebScraper Setup
+
+The Python scraper executable is pre-built and ready to use in `/WebScraping/dist/Main.exe`.
+
+To rebuild the scraper (optional):
+```bash
+cd WebScraping
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+pyinstaller --onefile Main.py
+```
+
+### 2. DataLink Setup
+
+The web application is pre-built and ready to use in `/DataLink/DataLink/bin/Release/net8.0/DataLink.exe`.
+
+To rebuild the web application (optional):
+```bash
+cd DataLink
+dotnet build
+dotnet publish -c Release
+```
+
+## Running the Application
+
+1. **Start the Web Scraper**
    ```bash
-   # Clone the repository
-   git clone https://github.com/Iulia-plesu/AutoScraper.git
-   cd AutoScraper
-
-   # Run the web application
-   cd DataLink/DataLink
-   dotnet run
+   cd WebScraping/dist
+   ./Main.exe
    ```
+   This will scrape the latest articles and output JSON data.
 
-3. Access the application at `http://localhost:5000`
+2. **Start the Web Application**
+   ```bash
+   cd DataLink/DataLink/bin/Release/net8.0
+   ./DataLink.exe
+   ```
+   The web interface will be available at `http://localhost:5000`
 
-## Features
+## Testing
 
-- Clean, responsive newspaper-style layout
-- Article categorization
-- Tag support for video/audio content
-- Timestamp display
-- Automatic duplicate removal
-- Link to original articles
+1. **Test the Web Scraper**
+   - Run the scraper: `./WebScraping/dist/Main.exe`
+   - Check the console output for JSON data
+   - Verify that articles are properly categorized
+
+2. **Test the Web Application**
+   - Start the application
+   - Open `http://localhost:5000` in your browser
+   - Check if articles are displayed correctly
+   - Verify category navigation
+
+## Project Structure
+
+```
+AutoScraper/
+├── WebScraping/
+│   ├── Main.py              # Scraping logic
+│   ├── requirements.txt     # Python dependencies
+│   └── dist/
+│       └── Main.exe         # Built executable
+├── DataLink/
+│   ├── DataLink.sln
+│   └── DataLink/
+│       ├── Program.cs       # Application entry
+│       ├── Models/          # Data models
+│       └── Pages/           # Web pages
+└── README.md
+```
+
+## Development Notes
+
+- The scraper is configured to run in headless mode
+- Web application uses minimal API style
+- JSON data format matches between Python and C# models
+- Error handling is implemented in both components

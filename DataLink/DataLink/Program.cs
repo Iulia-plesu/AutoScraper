@@ -9,7 +9,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
-// Remove HTTPS redirection since we're using HTTP
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
